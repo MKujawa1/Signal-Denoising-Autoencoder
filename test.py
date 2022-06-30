@@ -95,8 +95,8 @@ model.fit(
 
 )
 
-model.save('drive/MyDrive/model_denoise')
-model = tf.keras.models.load_model('drive/MyDrive/model_denoise')
+model.save('model_denoise')
+model = tf.keras.models.load_model('model_denoise')
 
 ref,test = generate_data(1) 
 ref_norm = tf.keras.utils.normalize(ref)
