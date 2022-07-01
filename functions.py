@@ -43,22 +43,22 @@ def reshape_data(X_train_noi,X_test_noi,X_train,X_test):
 
 def compile_model():
     inp = tf.keras.Input(shape = (1000,1))
-    alpha = 0.01
+    alpha = 0.015
     
-    x = layers.Conv1D(64,64,strides = 1,padding ='same',activation= LeakyReLU(alpha = alpha))(inp)
+    x = layers.Conv1D(64,90,strides = 1,padding ='same',activation= LeakyReLU(alpha = alpha))(inp)
     x = layers.MaxPool1D(2)(x)
-    x = layers.Conv1D(32,32,strides = 1,padding='same',activation=LeakyReLU(alpha = alpha))(x)
+    x = layers.Conv1D(32,40,strides = 1,padding='same',activation=LeakyReLU(alpha = alpha))(x)
     x = layers.MaxPool1D(2)(x)
-    x = layers.Conv1D(16,16,1,'same',activation=LeakyReLU(alpha = alpha))(x)
+    x = layers.Conv1D(16,30,1,'same',activation=LeakyReLU(alpha = alpha))(x)
     x = layers.MaxPool1D(2)(x)
     
     x = layers.UpSampling1D(2)(x)
-    x = layers.Conv1DTranspose(16,16,1,'same',activation=LeakyReLU(alpha = alpha))(x)
+    x = layers.Conv1DTranspose(16,30,1,'same',activation=LeakyReLU(alpha = alpha))(x)
     x = layers.UpSampling1D(2)(x)
-    x = layers.Conv1DTranspose(32,32,1,'same',activation=LeakyReLU(alpha = alpha))(x)
+    x = layers.Conv1DTranspose(32,40,1,'same',activation=LeakyReLU(alpha = alpha))(x)
     x = layers.UpSampling1D(2)(x)
-    x = layers.Conv1DTranspose(64,64,1,'same',activation=LeakyReLU(alpha = alpha))(x)
-    x = layers.Conv1DTranspose(1,24,padding ='same',activation='linear')(x)
+    x = layers.Conv1DTranspose(64,90,1,'same',activation=LeakyReLU(alpha = alpha))(x)
+    x = layers.Conv1DTranspose(1,15,padding ='same',activation='linear')(x)
     
     opt = tf.keras.optimizers.Adam(learning_rate = 0.000001)
     
