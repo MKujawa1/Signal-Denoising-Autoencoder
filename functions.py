@@ -6,9 +6,43 @@ from keras.layers import LeakyReLU
 from skimage.transform import resize
 
 def lorentzian (x, a, x0, gam):
+    '''
+    Generate lorentzian curve.
+
+    Parameters
+    ----------
+    x : array
+        Range of function.
+    a : float
+        Amplitude.
+    x0 : int
+        Position of maximum.
+    gam : float
+        Full width at half maximum.
+
+    Returns
+    -------
+    array
+        Lorentzian curve to generate_signal.
+
+    '''
     return a * gam**2 / ( gam**2 + ( x - x0 )**2)
 
 def generate_signal(peaks):
+    '''
+    Generate one signal with n-peaks
+
+    Parameters
+    ----------
+    peaks : int
+        Number of peaks.
+
+    Returns
+    -------
+    signal : array
+        Signal with n-peaks.
+
+    '''
     signal = 0
     x = np.linspace(-500,500,1000)
     for peak in range(peaks):
@@ -19,6 +53,22 @@ def generate_signal(peaks):
     return signal
 
 def generate_data(size):
+    '''
+    Generate set of data do train and and fit model
+
+    Parameters
+    ----------
+    size : int
+        Size of output array.
+
+    Returns
+    -------
+    clean_data : array
+        Generated set of clean data without noise.
+    noi_data : array
+        Generated set of noised data.
+
+    '''
     clean_data = []
     noi_data = []
     for s in range(size):
@@ -31,6 +81,32 @@ def generate_data(size):
     return clean_data,noi_data
 
 def reshape_data(X_train_noi,X_test_noi,X_train,X_test):
+    '''
+    Normalizing and reshaping data to fitting
+
+    Parameters
+    ----------
+    X_train_noi : array
+        Train data with noise.
+    X_test_noi : array
+        Test data with noise.
+    X_train : array
+        Train data without noise.
+    X_test : array
+        Test data without noise.
+
+    Returns
+    -------
+    X_train_noi : array
+        Normalized and reshaped data with noise to train.
+    X_test_noi : array
+        Normalized and reshaped data with noise to test.
+    X_train : array
+        Normalized and reshaped data without noise to train.
+    X_test : array
+        Normalized and reshaped data without noise to test.
+
+    '''
     X_train = tf.keras.utils.normalize(X_train)
     X_test = tf.keras.utils.normalize(X_test)
     X_train_noi = tf.keras.utils.normalize(X_train_noi)
@@ -42,6 +118,15 @@ def reshape_data(X_train_noi,X_test_noi,X_train,X_test):
     return X_train_noi,X_test_noi,X_train,X_test
 
 def compile_model():
+    '''
+    Compile created architecture.
+
+    Returns
+    -------
+    model : Tensorflow model
+        Model to fit.
+
+    '''
     inp = tf.keras.Input(shape = (1000,1))
     alpha = 0.015
     
@@ -67,7 +152,33 @@ def compile_model():
     model.compile(optimizer = opt,loss = 'mse')
     return model
 
-def fit_model(model, X_train_noi,X_test_noi,X_train,X_test,batch_size = 2, epochs = 14):
+def fit_model(model, X_train_noi,X_test_noi,X_train,X_test,batch_size = 4, epochs = 20):
+    '''
+    Fitting model to data.
+
+    Parameters
+    ----------
+    model : Tensorflow model
+        Model from compile_model.
+    X_train_noi : array
+        Train data with noise.
+    X_test_noi : array
+        Test data with noise.
+    X_train : array
+        Train data without noise.
+    X_test : array
+        Test data without noise.
+    batch_size : int, optional
+        Size of batch. The default is 2.
+    epochs : int, optional
+        Size of epochs. The default is 14.
+
+    Returns
+    -------
+    model : Tensorflow model
+        Fitted model, ready to predict.
+
+    '''
     model.fit(
         x = X_train_noi,
         y= X_train,
@@ -79,7 +190,28 @@ def fit_model(model, X_train_noi,X_test_noi,X_train,X_test,batch_size = 2, epoch
     return model
 
 def save_model(model, path):
+    '''
+    Saving model from fit_model
+
+    Parameters
+    ----------
+    model : Tensorflow model
+        Model to save.
+    path : str
+        Path to dir.
+
+
+    '''
     model.save(path)
     
 def load_model(path):
+    '''
+    Load model from dir
+
+    Parameters
+    ----------
+    path : str
+        Path to model.
+
+    '''
     return tf.keras.models.load_model(path)
